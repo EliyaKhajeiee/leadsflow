@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LeadFlow Texas — Reports</title>
+<style>
+:root{--bg:#0b0f17;--card:#131a28;--card2:#1a2332;--border:#232e42;--text:#eef1f6;--mut:#8b95a7;--acc:#6366f1;--green:#34d399;--warn:#fbbf24;--red:#f87171}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,'Segoe UI',Inter,sans-serif;padding:16px;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+h1{font-size:20px;letter-spacing:-.02em;display:inline}
+.sub{color:var(--mut);font-size:12px;margin:4px 0 18px}
+h2{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:24px 0 10px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.stat .n{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.stat .l{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.stat.hero{border-color:var(--acc)}
+.repcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.repcard h3{font-size:16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.repcard h3 .meetings{color:var(--warn);font-size:12px;font-weight:600}
+.breakdown{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--card2);border:1px solid var(--border);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--mut)}
+.chip b{color:var(--text)}
+.chip.int-Yes{border-color:var(--green);color:var(--green)}
+.chip.int-Maybe{border-color:var(--warn);color:var(--warn)}
+.chip.int-Meetingbooked{border-color:var(--warn);color:var(--warn)}
+.chip.int-No{border-color:var(--red);color:var(--red)}
+.chip.rep{border-color:var(--acc);color:#c7caff}
+a.chip{text-decoration:none;display:inline-block}
+.bar2{background:var(--card2);border-radius:8px;height:6px;overflow:hidden;margin-top:8px}
+.bar2 i{display:block;height:100%;background:var(--acc)}
+/* daily table */
+.daycard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:8px}
+.daycard .dhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.daycard .dhead b{font-size:14px}
+.daycard .dhead .tot{color:var(--mut);font-size:12px}
+.daycard .tot b{color:var(--text)}
+.daycard.today{border-color:var(--acc)}
+/* feed */
+.feeditem{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;margin-bottom:8px}
+.feeditem .fhead{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.feeditem .fhead b{font-size:14px}
+.feeditem .when{color:var(--mut);font-size:11px;white-space:nowrap}
+.feeditem .fnote{color:#c7d0de;font-size:13px;margin-top:6px;line-height:1.5}
+.feeditem .breakdown{margin-top:6px}
+.logbox{background:#0a0e15;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.6;color:#c7d2e0;max-height:420px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.empty{color:var(--mut);font-size:13px;padding:20px;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:14px}
+.srcnote{color:var(--mut);font-size:11px;margin-top:6px}
+.more{width:100%;background:var(--card);border:1px solid var(--border);color:var(--mut);border-radius:12px;padding:12px;font-size:13px;cursor:pointer;font-weight:600;margin-top:2px}
+#lock{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+#lock .box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:340px;max-width:100%;padding:26px;text-align:center}
+input{background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:16px;font-family:inherit;width:100%;margin-bottom:10px;min-height:44px}
+button{background:var(--acc);border:0;color:#fff;border-radius:10px;padding:12px 14px;font-size:14px;cursor:pointer;font-weight:600;width:100%;min-height:48px;font-family:inherit}
+button.ghost{background:transparent;border:1px solid var(--border);color:var(--mut);width:auto;padding:6px 12px;min-height:32px;font-size:12.5px}
+button.ghost:active{background:rgba(255,255,255,.06)}
+/* ---------- call scripts ---------- */
+.zone{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.zhead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.zhead b{font-size:15px}
+.deftag{font-size:10.5px;color:var(--acc);background:rgba(99,102,241,.12);border-radius:999px;padding:2px 9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.zstatus{font-size:12.5px;color:var(--mut);margin-bottom:10px}
+.zstatus a{color:#b9bdff}
+.drop{border:1.5px dashed var(--border);border-radius:12px;padding:20px 14px;text-align:center;font-size:13px;color:var(--mut);cursor:pointer;transition:border-color .15s,background .15s}
+.drop:active,.drop.over{border-color:var(--acc);background:rgba(99,102,241,.06);color:var(--text)}
+.zprog{font-size:12px;color:var(--mut);margin-top:8px;min-height:16px}
+.err{color:var(--red)}
+</style></head><body>
+<h1>Reports</h1> <span class="sub">Call activity + pipeline logs &middot; Updated 2026-08-18 08:01</span>
+<div id="app"></div>
+
+<div id="lock"><div class="box">
+<h2 style="margin-bottom:8px;text-transform:none;color:var(--text);font-size:17px">LeadFlow Texas — Reports</h2>
+<p style="color:var(--mut);font-size:13px;margin-bottom:14px">Enter admin passcode to view</p>
+<input id="pw" type="password" placeholder="Passcode">
+<button onclick="tryUnlock()">Unlock</button>
+<div id="pwErr" style="color:var(--red);font-size:12px;margin-top:8px"></div>
+</div></div>
+
+<script>
+const PAYLOAD={"enc": {"salt": "0UkimSPYJmvnfXs0Ee7YFQ==", "iv": "sUsuVJYGG43UmWRB", "ct": "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"}};
+const GH_USER="EliyaKhajeiee";
+const GH_REPO="leadsflow";
+const REPS=[{"name": "Aarrod", "slug": "aarrod"}, {"name": "Adam", "slug": "adam"}, {"name": "Niko", "slug": "niko"}];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+let FEED=[],feedShown=15;
+// The GitHub token lives inside the encrypted PAYLOAD (see build_report_html)
+// so it only exists in memory after the real admin passcode is entered --
+// never sitting in this page as plaintext.
+let GH_TOKEN="";
+function api(path,opts={}){
+const headers={"Authorization":"token "+GH_TOKEN,"Accept":"application/vnd.github+json","Content-Type":"application/json",...(opts.headers||{})};
+return fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}${path}`,{...opts,headers});
+}
+
+function chip(label,val,cls){return `<span class="chip ${cls||''}"><b>${esc(val)}</b> ${esc(label)}</span>`}
+function statChip(n,l,hero){return `<div class="stat${hero?" hero":""}"><div class="n">${esc(n)}</div><div class="l">${esc(l)}</div></div>`}
+function niceDay(d){const dt=new Date(d+"T12:00:00");
+if(isNaN(dt))return d;
+return dt.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}
+
+function repCard(name,s){
+const pct=s.total?Math.round(100*s.called/s.total):0;
+const statusChips=Object.entries(s.by_status).map(([k,v])=>chip(k,v)).join("");
+const resultChips=Object.entries(s.by_result).map(([k,v])=>chip(k,v)).join("");
+const interestChips=Object.entries(s.by_interest).map(([k,v])=>chip(k,v,"int-"+k.replace(/\s+/g,""))).join("");
+return `<div class="repcard">
+<h3><span>${esc(name)}</span>${s.meetings_booked?`<span class="meetings">${s.meetings_booked} meeting${s.meetings_booked===1?"":"s"} booked</span>`:""}</h3>
+<div class="grid">
+${statChip(s.total,"Total leads")}${statChip(s.called,"Called")}${statChip(s.new,"Not yet called")}${statChip(pct+"%","Worked")}
+</div>
+<div class="bar2"><i style="width:${pct}%"></i></div>
+<h2 style="margin:14px 0 4px">Status</h2><div class="breakdown">${statusChips||'<span class="chip">none yet</span>'}</div>
+${resultChips?`<h2 style="margin:14px 0 4px">Call result</h2><div class="breakdown">${resultChips}</div>`:""}
+${interestChips?`<h2 style="margin:14px 0 4px">Interest</h2><div class="breakdown">${interestChips}</div>`:""}
+</div>`}
+
+function dayCard(day,reps,isToday){
+let tot=0,meet=0;
+Object.values(reps).forEach(d=>{tot+=d.calls;meet+=d.meetings||0});
+const parts=Object.entries(reps).map(([rep,d])=>{
+const res=Object.entries(d.results||{}).map(([k,v])=>`${v} ${k}`).join(" · ");
+const ints=Object.entries(d.interests||{}).map(([k,v])=>chip(k,v,"int-"+k.replace(/\s+/g,""))).join("");
+return `<div class="breakdown"><span class="chip rep"><b>${esc(rep)}</b> · ${d.calls} call${d.calls===1?"":"s"}</span>${res?`<span class="chip">${esc(res)}</span>`:""}${ints}</div>`}).join("");
+return `<div class="daycard${isToday?" today":""}">
+<div class="dhead"><b>${isToday?"Today — ":""}${esc(niceDay(day))}</b><span class="tot"><b>${tot}</b> call${tot===1?"":"s"}${meet?` · <b style="color:var(--warn)">${meet}</b> meeting${meet===1?"":"s"}`:""}</span></div>
+${parts}</div>`}
+
+function feedItem(f){
+const chips=[f.result?chip("",f.result):"",f.interest?chip("",f.interest,"int-"+f.interest.replace(/\s+/g,"")):""].join("");
+const when=(f.ts||f.day||"").replace("T"," ").slice(0,16);
+return `<div class="feeditem">
+<div class="fhead"><b>${esc(f.business||"(unknown business)")}</b><span class="when">${esc(f.rep)} · ${esc(when)}</span></div>
+${chips?`<div class="breakdown">${chips}</div>`:""}
+${f.note?`<div class="fnote">${esc(f.note)}</div>`:""}
+</div>`}
+
+function renderFeed(){
+const el=$("feedwrap");
+if(!el)return;
+if(!FEED.length){el.innerHTML='<div class="empty">No call activity logged yet — outcomes reps tap in their dialers will show up here.</div>';return}
+el.innerHTML=FEED.slice(0,feedShown).map(feedItem).join("")+
+(FEED.length>feedShown?`<button class="more" onclick="feedShown+=25;renderFeed()">Show ${Math.min(25,FEED.length-feedShown)} more</button>`:"")}
+
+function render(data){
+GH_TOKEN=data.github_token||"";
+const stats=data.stats;
+const act=stats.activity||{daily:{},feed:[],source:"",today:""};
+FEED=act.feed||[];
+const todayKey=act.today||new Date().toISOString().slice(0,10);
+const todayReps=act.daily[todayKey]||{};
+let callsToday=0,meetToday=0,ansToday=0;
+Object.values(todayReps).forEach(d=>{callsToday+=d.calls;meetToday+=d.meetings||0;ansToday+=(d.results||{})["Answered"]||0});
+let html="";
+
+/* ---- rep dialer links ---- */
+if((stats.rep_links||[]).length){
+html+=`<h2>Dialers</h2><div class="breakdown">${stats.rep_links.map(r=>`<a class="chip rep" href="../${esc(r.slug)}/">${esc(r.name)} →</a>`).join("")}</div>`}
+
+/* ---- call scripts ---- */
+html+=`<h2>Call scripts</h2><p style="margin-bottom:12px">Drop a PDF on a rep for their own script, or on <b>All reps</b> for the shared default others fall back to. Live for reps within a couple minutes.</p><div id="zones"></div>`;
+
+/* ---- today ---- */
+html+=`<h2>Today's calls</h2><div class="grid">
+${statChip(callsToday,"Calls today",true)}${statChip(ansToday,"Answered")}${statChip(meetToday,"Meetings booked")}</div>`;
+const trChips=Object.entries(todayReps).map(([rep,d])=>chip(rep,d.calls,"rep")).join("");
+html+=`<div class="breakdown" style="margin-top:8px">${trChips||'<span class="chip">No calls logged yet today</span>'}</div>`;
+
+/* ---- last 14 days ---- */
+const days=Object.keys(act.daily).sort().reverse().slice(0,14);
+html+=`<h2>Daily breakdown</h2>`;
+if(!days.length){html+='<div class="empty">No call history yet.</div>'}
+else{html+=days.map(d=>dayCard(d,act.daily[d],d===todayKey)).join("")}
+if(act.source==="xlsx"){html+=`<div class="srcnote">Built from the lead sheet (latest call per lead). Full per-day history appears when the Google call log is reachable.</div>`}
+
+/* ---- lifetime overall ---- */
+html+=`<h2>Overall (all time)</h2><div class="grid">${statChip(stats.overall.total,"Total leads")}${statChip(stats.overall.called,"Called")}${statChip(stats.overall.new,"Not yet called")}${statChip(stats.overall.meetings_booked,"Meetings booked")}</div>`;
+html+=`<h2>By rep</h2>`;
+const names=Object.keys(stats.reps);
+if(!names.length){html+='<div class="empty">No leads assigned yet.</div>'}
+else{html+=names.map(n=>repCard(n,stats.reps[n])).join("")}
+
+/* ---- recent activity ---- */
+html+=`<h2>Recent call activity</h2><div id="feedwrap"></div>`;
+
+html+=`<h2>Recent pipeline log</h2><div class="logbox">${(data.log||"(no recent log entries)").replace(/&/g,"&amp;").replace(/</g,"&lt;")}</div>`;
+$("app").innerHTML=html;
+renderFeed();
+renderZones();
+}
+
+/* ---- call script uploader (writes straight to the "assets" branch) ---- */
+// Reps read these back through raw.githubusercontent.com (see the dialer's
+// SCRIPT_BASE comment) -- jsDelivr's GitHub CDN was tried first but its
+// purge API rate-limits under repeated updates and silently serves stale
+// file content afterward with no error, which is worse than raw's plain
+// few-minute cache.
+function rawUrl(slug){return `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/assets/scripts/${slug}.pdf`}
+function zoneHtml(slug,label,isDefault){
+return `<div class="zone" id="zone-${slug}">
+<div class="zhead"><b>${esc(label)}</b>${isDefault?'<span class="deftag">shared default</span>':""}</div>
+<div class="zstatus" id="status-${slug}">checking…</div>
+<div class="drop" id="drop-${slug}" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'${slug}')" onclick="document.getElementById('file-${slug}').click()">Drag a PDF here, or tap to choose a file</div>
+<input type="file" id="file-${slug}" accept="application/pdf" style="display:none" onchange="onFilePicked(event,'${slug}')">
+<div class="zprog" id="prog-${slug}"></div>
+</div>`;
+}
+function renderZones(){
+const el=$("zones");
+if(!el)return;
+let html=zoneHtml("all","All reps",true);
+REPS.forEach(r=>{html+=zoneHtml(r.slug,r.name,false)});
+el.innerHTML=html;
+refreshStatus("all");
+REPS.forEach(r=>refreshStatus(r.slug));
+}
+async function refreshStatus(slug){
+const el=$("status-"+slug);
+if(!el)return;
+try{
+const res=await api(`/contents/scripts/${slug}.pdf?ref=assets`);
+if(res.status===200){
+const d=await res.json();
+const kb=Math.round((d.size||0)/1024);
+el.innerHTML=`✓ Uploaded (${kb} KB) · <a href="${rawUrl(slug)}" target="_blank" rel="noopener">view</a> · <button class="ghost" onclick="removeScript('${slug}')">Remove</button>`;
+}else if(res.status===404){
+el.textContent=slug==="all"?"— nothing uploaded yet —":"— none set, this rep uses the All default —";
+}else if(res.status===401||res.status===403){
+el.innerHTML='<span class="err">GitHub rejected the request — the saved deploy token may be missing or invalid.</span>';
+}else{
+el.textContent="Couldn't check status ("+res.status+").";
+}
+}catch(e){el.textContent="Couldn't check status (network error)."}
+}
+function onDragOver(e){e.preventDefault();e.currentTarget.classList.add("over")}
+function onDragLeave(e){e.currentTarget.classList.remove("over")}
+function onDrop(e,slug){e.preventDefault();e.currentTarget.classList.remove("over");const f=e.dataTransfer.files[0];if(f)handleFile(slug,f)}
+function onFilePicked(e,slug){const f=e.target.files[0];if(f)handleFile(slug,f);e.target.value=""}
+function handleFile(slug,file){
+if(file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){setProg(slug,"Only PDF files are supported.",true);return}
+if(file.size>90*1024*1024){setProg(slug,"File too large (max ~90MB).",true);return}
+uploadPdf(slug,file);
+}
+function setProg(slug,msg,isErr){const el=$("prog-"+slug);if(el)el.innerHTML=isErr?`<span class="err">${esc(msg)}</span>`:esc(msg)}
+function b64FromArrayBuffer(buf){
+let binary="";const bytes=new Uint8Array(buf);const chunk=0x8000;
+for(let i=0;i<bytes.length;i+=chunk){binary+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk))}
+return btoa(binary);
+}
+async function uploadPdf(slug,file){
+setProg(slug,"Reading file…");
+try{
+const buf=await file.arrayBuffer();
+const b64=b64FromArrayBuffer(buf);
+
+setProg(slug,"Reading branch head…");
+const refRes=await api(`/git/ref/heads/assets`);
+if(!refRes.ok)throw new Error("Couldn't read assets branch ("+refRes.status+")");
+const refData=await refRes.json();
+const commitSha=refData.object.sha;
+
+const commitRes0=await api(`/git/commits/${commitSha}`);
+if(!commitRes0.ok)throw new Error("Couldn't read branch commit ("+commitRes0.status+")");
+const commitData0=await commitRes0.json();
+const baseTreeSha=commitData0.tree.sha;
+
+setProg(slug,"Uploading PDF…");
+const blobRes=await api(`/git/blobs`,{method:"POST",body:JSON.stringify({content:b64,encoding:"base64"})});
+if(!blobRes.ok)throw new Error("Upload failed ("+blobRes.status+")");
+const blobData=await blobRes.json();
+
+setProg(slug,"Building tree…");
+const treeRes=await api(`/git/trees`,{method:"POST",body:JSON.stringify({base_tree:baseTreeSha,tree:[{path:"scripts/"+slug+".pdf",mode:"100644",type:"blob",sha:blobData.sha}]})});
+if(!treeRes.ok)throw new Error("Tree build failed ("+treeRes.status+")");
+const treeData=await treeRes.json();
+
+setProg(slug,"Committing…");
+const commitRes=await api(`/git/commits`,{method:"POST",body:JSON.stringify({message:`Update ${slug}.pdf via Levron Portal`,tree:treeData.sha,parents:[commitSha]})});
+if(!commitRes.ok)throw new Error("Commit failed ("+commitRes.status+")");
+const newCommit=await commitRes.json();
+
+setProg(slug,"Publishing…");
+const updateRes=await api(`/git/refs/heads/assets`,{method:"PATCH",body:JSON.stringify({sha:newCommit.sha})});
+if(!updateRes.ok)throw new Error("Branch update failed ("+updateRes.status+")");
+
+setProg(slug,"✓ Live — reps will see this the next time they open their script.");
+refreshStatus(slug);
+}catch(e){setProg(slug,e.message||"Upload failed.",true)}
+}
+async function removeScript(slug){
+if(!confirm(slug==="all"?"Remove the shared default? Reps with no personal override will have nothing to view.":"Remove this rep's script? They'll fall back to the All default."))return;
+setProg(slug,"Removing…");
+try{
+const getRes=await api(`/contents/scripts/${slug}.pdf?ref=assets`);
+if(!getRes.ok)throw new Error("Couldn't find file to remove.");
+const d=await getRes.json();
+const delRes=await api(`/contents/scripts/${slug}.pdf`,{method:"DELETE",body:JSON.stringify({message:`Remove ${slug}.pdf via Levron Portal`,sha:d.sha,branch:"assets"})});
+if(!delRes.ok)throw new Error("Remove failed ("+delRes.status+")");
+setProg(slug,"Removed.");
+refreshStatus(slug);
+}catch(e){setProg(slug,e.message||"Remove failed.",true)}
+}
+
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function unlock(pw){const e=PAYLOAD.enc;const te=new TextEncoder();
+const km=await crypto.subtle.importKey("raw",te.encode(pw),"PBKDF2",false,["deriveKey"]);
+const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64(e.salt),iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(e.iv)},key,b64(e.ct));
+return JSON.parse(new TextDecoder().decode(pt))}
+async function tryUnlock(){try{const pw=$("pw").value;const d=await unlock(pw);
+localStorage.setItem("leadflow_reports_pw",pw);$("lock").style.display="none";render(d)}
+catch(e){$("pwErr").textContent="Wrong passcode"}}
+$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock()});
+(async()=>{
+if(PAYLOAD.plain){render(PAYLOAD.plain);return}
+$("lock").style.display="flex";
+const s=localStorage.getItem("leadflow_reports_pw");
+if(s){try{const d=await unlock(s);$("lock").style.display="none";render(d)}catch(e){}}
+})();
+</script></body></html>
